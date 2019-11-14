@@ -24,11 +24,28 @@ type UserInfo struct{
 	time int64			// 时间戳
 }
 
-func (tool *Tool) buildChips(uid string) bool{
-	type Girls struct {
-		SoC map[string]*soc.SoC `json:"chip_with_user_info"`
-	}
+type User_Info struct{
+	User_id		string `json:"user_id"`
+	Name		string `json:"name"`
+}
+type UserRecord struct {
+	Spend_point string `json:"spend_point"`
+}
+type KalinaData struct {
+	Level string `json:"level"`
+	Favor string `json:"favor"`
+}
+type GF_Json struct {
+	Info User_Info `json:"user_info"`
+	Record UserRecord `json:"user_record"`
+	Kalina KalinaData `json:"kalina_with_user_info"`
+	SoC map[string]*soc.SoC `json:"chip_with_user_info"`
+}
+type GF_Simple_Json struct{
+	Info User_Info `json:"user_info"`
+}
 
+func (tool *Tool) buildChips(uid string) bool{
 	tool.infoMutex.RLock()
 	info, isPresent := tool.userinfo[uid]
 	tool.infoMutex.RUnlock()
@@ -43,7 +60,7 @@ func (tool *Tool) buildChips(uid string) bool{
 	tool.userinfo[uid] = info // 更新时间避免被清理
 	tool.infoMutex.Unlock()
 
-	girls := Girls{}
+	girls := GF_Json{}
 	if err := json.Unmarshal([]byte(info.allData), &girls); err != nil {
 		return false
 	}

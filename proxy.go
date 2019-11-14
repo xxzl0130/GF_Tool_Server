@@ -63,8 +63,13 @@ func (tool *Tool) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.R
 	}else if strings.HasSuffix(ctx.Req.URL.Path,"/Index/index"){
 		// 获取详细数据
 		tool.signMutex.RLock()
-		sign := tool.sign[remote].sign
+		signInfo, isPresent := tool.sign[remote]
 		tool.signMutex.RUnlock()
+		if !isPresent{
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+			return resp
+		}
+		sign := signInfo.sign
 		data, err := cipher.AuthCodeDecodeB64(string(body)[1:], sign, true)
 		if err != nil {
 			//fmt.Printf("解析用户数据失败 -> %+v", err)
@@ -81,7 +86,20 @@ func (tool *Tool) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.R
 }
 
 func (tool *Tool) saveUserInfo(data string){
-	// TODO:get uid and save
+	info := GF_Simple_Json{}
+	if err := json.Unmarshal([]byte(data), &info); err != nil {
+		return
+	}
+	userinfo := UserInfo{
+		rule : "02",
+		name : info.Info.Name,
+		uid : info.Info.User_id,
+		allData : data,
+		time : time.Now().Unix(),
+	}
+	tool.infoMutex.Lock()
+	tool.userinfo[userinfo.uid] = userinfo
+	tool.infoMutex.Unlock()
 }
 
 func (tool *Tool) condition() goproxy.ReqConditionFunc {
