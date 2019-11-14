@@ -72,13 +72,16 @@ func (tool *Tool) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.R
 			return resp
 		}
 
-		// 做处理
-		tool.buildChip(data)
-
+		// 先保存数据
+		tool.saveUserInfo(data)
 	}
 
 	resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	return resp
+}
+
+func (tool *Tool) saveUserInfo(data string){
+	// TODO:get uid and save
 }
 
 func (tool *Tool) condition() goproxy.ReqConditionFunc {

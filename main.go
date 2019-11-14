@@ -27,7 +27,7 @@ type Tool struct{
 	signMutex *sync.RWMutex			// 锁
 	infoMutex *sync.RWMutex			// 锁
 	port int						// 代理端口
-	timeout int64						// 数据超时
+	timeout int64					// 数据超时
 }
 
 func main(){
