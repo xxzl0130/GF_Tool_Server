@@ -1,27 +1,16 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net"
 	"net/http"
 	"regexp"
-	"sort"
-	"strings"
 	"time"
-	"regexp"
 	"path/filepath"
 	"sync"
-
-	"github.com/elazarl/goproxy"
-	"github.com/pkg/errors"
+	"strconv"
 
 	"github.com/xxzl0130/rsyars/pkg/util"
-	"github.com/xxzl0130/rsyars/rsyars.adapter/hycdes"
-	"github.com/xxzl0130/rsyars/rsyars.x/soc"
-	cipher "github.com/xxzl0130/GF_Tool_Server/GF_cipher"
+	"github.com/elazarl/goproxy"
 )
 
 // 保存登陆签名用于解析数据，外层以IP为map的key
@@ -38,7 +27,7 @@ type Tool struct{
 	signMutex *sync.RWMutex			// 锁
 	infoMutex *sync.RWMutex			// 锁
 	port int						// 代理端口
-	timeout int						// 数据超时
+	timeout int64						// 数据超时
 }
 
 func main(){
@@ -52,14 +41,14 @@ func main(){
 		port : 8080,
 		timeout : 600, // 10分钟超时
 	}
-	if err := ar.Run(); err != nil {
+	if err := tool.Run(); err != nil {
 		panic(fmt.Sprintf("程序启动失败 -> %+v", err))
 	}
 }
 
 func (tool *Tool) watchdog(){
 	for{
-		time.Sleep(time.Second * (tool.timeout / 5))
+		time.Sleep(time.Second * 60)
 		now := time.Now().Unix()
 
 		nSignMap := make(map[string]SignInfo)
@@ -87,13 +76,13 @@ func (tool *Tool) watchdog(){
 		tool.infoMutex.RUnlock()
 		tool.infoMutex.Lock()
 		// 覆盖
-		tool.userinfo = nSignMap
+		tool.userinfo = nInfoMap
 		tool.infoMutex.Unlock()
 	}
 }
 
 func (tool *Tool) Run() error {
-	localhost, err := ar.getLocalhost()
+	localhost, err := tool.getLocalhost()
 	if err != nil {
 		fmt.Printf("获取代理地址失败 -> %+v", err)
 		return err
@@ -125,7 +114,7 @@ func (tool *Tool) Run() error {
 		Addr:         ":3333",
 		Handler:      mux,
 	}
-	go ar.watchdog()
+	go tool.watchdog()
 	fileSrv.ListenAndServe()
 	
 	return nil

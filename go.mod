@@ -1,4 +1,4 @@
-module GF_Tool_Server
+module github.com/xxzl0130/GF_Tool_Server
 
 go 1.13
 

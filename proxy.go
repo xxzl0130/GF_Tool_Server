@@ -3,28 +3,19 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"regexp"
-	"sort"
 	"strings"
 	"time"
-	"regexp"
-	"path/filepath"
-	"sync"
 
 	"github.com/elazarl/goproxy"
 	"github.com/pkg/errors"
 
-	"github.com/xxzl0130/rsyars/pkg/util"
-	"github.com/xxzl0130/rsyars/rsyars.adapter/hycdes"
-	"github.com/xxzl0130/rsyars/rsyars.x/soc"
 	cipher "github.com/xxzl0130/GF_Tool_Server/GF_cipher"
 )
 
-func (ar *AntiRivercrab) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response{
+func (tool *Tool) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response{
 	type Uid struct {
 		Sign            string `json:"sign"`
 	}
@@ -72,7 +63,7 @@ func (ar *AntiRivercrab) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) 
 	}else if strings.HasSuffix(ctx.Req.URL.Path,"/Index/index"){
 		// 获取详细数据
 		tool.signMutex.RLock()
-		sign := ar.sign[remote].sign
+		sign := tool.sign[remote].sign
 		tool.signMutex.RUnlock()
 		data, err := cipher.AuthCodeDecodeB64(string(body)[1:], sign, true)
 		if err != nil {
@@ -85,6 +76,9 @@ func (ar *AntiRivercrab) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) 
 		tool.buildChip(data)
 
 	}
+
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	return resp
 }
 
 func (tool *Tool) condition() goproxy.ReqConditionFunc {
@@ -100,7 +94,7 @@ func (tool *Tool) condition() goproxy.ReqConditionFunc {
 
 func (tool *Tool) block() goproxy.ReqConditionFunc {
 	return func(req *http.Request, ctx *goproxy.ProxyCtx) bool {
-		if ar.host.MatchString(req.Host) && ar.url.MatchString(req.URL.Path) {
+		if tool.host.MatchString(req.Host) && tool.url.MatchString(req.URL.Path) {
 			return false
 		}else{
 			return true
