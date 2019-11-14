@@ -8,9 +8,12 @@ import (
 	"path/filepath"
 	"sync"
 	"strconv"
+	"text/template"
+	"io/ioutil"
 
 	"github.com/xxzl0130/rsyars/pkg/util"
 	"github.com/elazarl/goproxy"
+	"github.com/julienschmidt/httprouter"
 )
 
 // 保存登陆签名用于解析数据，外层以IP为map的key
@@ -28,6 +31,7 @@ type Tool struct{
 	infoMutex *sync.RWMutex			// 锁
 	port int						// 代理端口
 	timeout int64					// 数据超时
+	html map[string]*template.Template // 网页数据
 }
 
 func main(){
@@ -38,8 +42,9 @@ func main(){
 		url : regexp.MustCompile("(index\\.php(\\/.*\\/Index\\/index)*)|(cn_mica_new\\/.*)|(auth)|(xy\\/.*)|(Config\\/.*)|(normal_login)"),
 		signMutex : new(sync.RWMutex),
 		infoMutex : new(sync.RWMutex),
-		port : 8080,
+		port : 8000,
 		timeout : 600, // 10分钟超时
+		html : make(map[string]*template.Template),
 	}
 	if err := tool.Run(); err != nil {
 		panic(fmt.Sprintf("程序启动失败 -> %+v", err))
@@ -87,8 +92,9 @@ func (tool *Tool) Run() error {
 		fmt.Printf("获取代理地址失败 -> %+v", err)
 		return err
 	}
-	fmt.Printf("代理地址 -> %s:%d", localhost, tool.port)
+	fmt.Printf("代理地址 -> %s:%d\n", localhost, tool.port + 1)
 
+	// 代理服务
 	proxy := goproxy.NewProxyHttpServer()
 	proxy.Logger = new(util.NilLogger)
 	proxy.OnResponse(tool.condition()).DoFunc(tool.onResponse)
@@ -96,16 +102,15 @@ func (tool *Tool) Run() error {
 		func(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
 			return r, goproxy.NewResponse(r, goproxy.ContentTypeText, http.StatusForbidden, "Forbidden!")
 		})
-	
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
-		Addr:         ":" + strconv.Itoa(tool.port),
+		Addr:         ":" + strconv.Itoa(tool.port + 1),
 		Handler:      proxy,
 	}
-
 	go srv.ListenAndServe()
 
+	// PAC文件服务
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.Dir("."+string(filepath.Separator)+"PACFile")))
 	fileSrv := &http.Server{
@@ -115,7 +120,26 @@ func (tool *Tool) Run() error {
 		Handler:      mux,
 	}
 	go tool.watchdog()
-	fileSrv.ListenAndServe()
-	
+	go fileSrv.ListenAndServe()
+
+	// 网页服务
+	tool.loadHtml("chip","./HTML/chip.html")
+	router := httprouter.New()
+	router.GET("/chip", tool.getHome)
+	router.POST("/chip", tool.postHome)
+	httpSrv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		Addr:         ":" + strconv.Itoa(tool.port),
+		Handler:      router,
+	}
+	fmt.Printf("网页地址 -> %s:%d\n", localhost, tool.port)
+
+	data,_ := ioutil.ReadFile("test.json")
+	tool.saveUserInfo(string(data))
+
+	if err := httpSrv.ListenAndServe(); err != nil {
+		fmt.Printf("启动代理服务器失败 -> %+v", err)
+	}
 	return nil
 }

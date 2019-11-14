@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+ 
+<html lang="zh-ch">
+	<head>
+		<meta charset="utf-8">
+		<title>少前芯片数据查询</title>
+	</head>
+ 
+	<body>
+        <form id="form" action="" method="POST">
+            <br> <br>
+            <table border="dotted" align="center" style="width:400px; height:100px;">
+                <tr>
+                    <th colspan="2" style="font-size:20px;";>少前芯片数据查询</th>
+                </tr>
+                <tr align="center">
+                    <td colspan="2">
+                    	<br>
+                        UID：<input type="text" name="uid" value={{.uid}}><br><br>
+			            昵称： <input type="text" name="name" value={{.name}}><br><br>
+                    </td>
+                </tr>
+                <tr align="center">
+                    <th colspan="1" style="font-size:10px;";>选择输出芯片的锁定状态</th>
+                	<td>
+                    	<input type="radio" value="0" name="locked" checked=true>任意
+                    	<input type="radio" value="1" name="locked">已锁定
+                    	<input type="radio" value="2" name="unlocked">未锁定
+                    </td>
+                </tr>
+                <tr align="center">
+                    <th colspan="1" style="font-size:10px;";>选择输出芯片的装备状态</th>
+                	<td>
+                    	<input type="radio" value="0" name="equipped">任意
+                    	<input type="radio" value="1" name="equipped">已装备
+                    	<input type="radio" value="2" name="equipped" checked=true>未装备
+                    </td>
+                </tr>
+                <tr align="center">
+                    <td colspan="2">
+                        <input type="submit" value="查询">
+                    </td>
+                </tr>
+                <tr align="center">
+                    <td colspan="2">
+                        芯片代码：<input type="text" id="chipcode" value={{.chipcode}} form="nopost">
+                    </td>
+                </tr>
+                <tr align="left" form="nopost">
+                    <td colspan="2">
+                        说明：将手机连接任意WiFi，长按打开WiFi的高级设置，代理选择“自动代理”，代理地址为：<br>
+                        http://gf.xuanxuan.tech:3333/GF.pac<br>
+                        然后重启游戏，登陆完成后在本页面填写UID和昵称并选择芯片配置，然后查询。<br>
+                        芯片代码请ctrl+a全选复制。数据有效期为10分钟。
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html> 

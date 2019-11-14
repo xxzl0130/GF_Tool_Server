@@ -14,6 +14,7 @@ import (
 // 存储详细游戏数据的结构体，外层以UID为map的key
 type UserInfo struct{
 	rule string			// 芯片规则
+	ruleChanged bool	// 规则是否改变的标志
 	name string			// 游戏昵称
 	uid  string			// 游戏UID
 	chipCode string		// 芯片代码
@@ -43,17 +44,22 @@ type GF_Json struct {
 }
 type GF_Simple_Json struct{
 	Info User_Info `json:"user_info"`
+	Record UserRecord `json:"user_record"`
+	Kalina KalinaData `json:"kalina_with_user_info"`
 }
 
-func (tool *Tool) buildChips(uid string) bool{
+func (tool *Tool) buildChips(uid string) string{
 	tool.infoMutex.RLock()
 	info, isPresent := tool.userinfo[uid]
 	tool.infoMutex.RUnlock()
 	if !isPresent{
-		return false
+		return "数据不存在！"
 	}
-	if len(info.chipCode) > 5{
-		return true
+	if len(info.chipCode) > 5 && !info.ruleChanged{
+		return info.chipCode
+	}
+	if time.Now().Unix() - info.time < 5{
+		return "请勿频繁请求！"
 	}
 	tool.infoMutex.Lock()
 	info.time = time.Now().Unix()
@@ -62,7 +68,7 @@ func (tool *Tool) buildChips(uid string) bool{
 
 	girls := GF_Json{}
 	if err := json.Unmarshal([]byte(info.allData), &girls); err != nil {
-		return false
+		return "数据解析错误！"
 	}
 
 	var values []*soc.SoC
@@ -78,7 +84,7 @@ func (tool *Tool) buildChips(uid string) bool{
 		target, err := hycdes.NewSoC(value)
 		if err != nil {
 			if !strings.Contains(err.Error(), "unknown") {
-				return false
+				return "数据解析错误！"
 			} else {
 				continue
 			}
@@ -87,7 +93,7 @@ func (tool *Tool) buildChips(uid string) bool{
 	}
 
 	if len(targets) == 0 {
-		return false
+		return "数据解析错误！"
 	}
 
 	sort.SliceStable(targets, func(i, j int) bool {
@@ -97,14 +103,14 @@ func (tool *Tool) buildChips(uid string) bool{
 	c, err := hycdes.Build(targets)
 	if err != nil {
 		//rs.log.Errorf("生成芯片代码失败 -> %+v", err)
-		return false
+		return "数据解析错误！"
 	}
 	info.chipCode = c
 	tool.infoMutex.Lock()
 	tool.userinfo[uid] = info
 	tool.infoMutex.Unlock()
 
-	return true
+	return info.chipCode
 }
 
 func (tool *Tool) checkSoc(value *soc.SoC, rule string) bool {
