@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/elazarl/goproxy"
 	"github.com/pkg/errors"
@@ -97,6 +98,7 @@ func (tool *Tool) saveUserInfo(data string){
 		allData : data,
 		time : time.Now().Unix(),
 	}
+	//fmt.Printf("uid:%v, name:%v\n",info.Info.User_id,info.Info.Name)
 	tool.infoMutex.Lock()
 	tool.userinfo[userinfo.uid] = userinfo
 	tool.infoMutex.Unlock()
@@ -104,6 +106,7 @@ func (tool *Tool) saveUserInfo(data string){
 
 func (tool *Tool) condition() goproxy.ReqConditionFunc {
 	return func(req *http.Request, ctx *goproxy.ProxyCtx) bool {
+		//fmt.Printf("请求 -> %v\n", path(req))
 		if strings.HasSuffix(req.Host, "ppgame.com") {
 			if strings.HasSuffix(req.URL.Path, "/Index/index") || strings.HasSuffix(req.URL.Path, "/Index/getDigitalSkyNbUid"){
 				return true

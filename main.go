@@ -41,7 +41,7 @@ func main(){
 		url : regexp.MustCompile("(index\\.php(\\/.*\\/Index\\/index)*)|(cn_mica_new\\/.*)|(auth)|(xy\\/.*)|(Config\\/.*)|(normal_login)"),
 		signMutex : new(sync.RWMutex),
 		infoMutex : new(sync.RWMutex),
-		port : 8000,
+		port : 8080,
 		timeout : 600, // 10分钟超时
 		html : make(map[string]*template.Template),
 	}
