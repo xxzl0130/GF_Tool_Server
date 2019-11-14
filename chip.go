@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"sort"
 	"time"
+	"fmt"
 
 	//"github.com/xxzl0130/rsyars/pkg/util"
 	"github.com/xxzl0130/rsyars/rsyars.adapter/hycdes"
@@ -111,6 +112,33 @@ func (tool *Tool) buildChips(uid string) string{
 	tool.infoMutex.Unlock()
 
 	return info.chipCode
+}
+
+func (tool *Tool) buildKalina(uid string) [2]string{
+	var str[2] string
+	str[0]="数据解析错误！"
+	tool.infoMutex.RLock()
+	info, isPresent := tool.userinfo[uid]
+	tool.infoMutex.RUnlock()
+	if !isPresent{
+		return str
+	}
+	if time.Now().Unix() - info.time < 5{
+		return str
+	}
+	tool.infoMutex.Lock()
+	info.time = time.Now().Unix()
+	tool.userinfo[uid] = info // 更新时间避免被清理
+	tool.infoMutex.Unlock()
+
+	value := GF_Simple_Json{}
+	if err := json.Unmarshal([]byte([]byte(info.allData)), &value); err != nil {
+		//fmt.Printf("解析JSON数据失败 -> %+v\n", err)
+		return str
+	}
+	str[0] = fmt.Sprintf("\"%v 元\"",value.Record.Spend_point)
+	str[1] = fmt.Sprintf("\"%v  Lv.%v/30\"", value.Kalina.Favor, value.Kalina.Level)
+	return str
 }
 
 func (tool *Tool) checkSoc(value *soc.SoC, rule string) bool {

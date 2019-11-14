@@ -9,7 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (tool *Tool)getHome(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
+func (tool *Tool)getChip(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
 	data := map[string]string{
         "uid":  "\"\"",
 		"name": "\"\"",
@@ -18,8 +18,8 @@ func (tool *Tool)getHome(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 	tool.html["chip"].Execute(w,data)
 }
 
-func (tool *Tool)postHome(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
-	r.ParseForm() //它还将请求主体解析为表单，获得POST Form表单数据，必须先调用这个函数
+func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
+	r.ParseForm()
 
 	data := map[string]string{
         "uid":  r.PostForm["uid"][0],
@@ -46,6 +46,38 @@ func (tool *Tool)postHome(w http.ResponseWriter, r *http.Request, _ httprouter.P
 	}
 
 	tool.html["chip"].Execute(w,data)
+}
+
+func (tool *Tool)getKalina(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
+	data := map[string]string{
+        "uid":  "\"\"",
+		"name": "\"\"",
+		"kalina":"\"\"",
+		"spend":"\"\"",
+	}
+	tool.html["kalina"].Execute(w,data)
+}
+
+func (tool *Tool)postKalina(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
+	r.ParseForm()
+
+	data := map[string]string{
+        "uid":  r.PostForm["uid"][0],
+		"name": r.PostForm["name"][0],
+		"kalina":"\"\"",
+		"spend":"\"\"",
+	}
+
+	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
+	if isPresent{
+		if r.PostForm["name"][0] == info.name{
+			res := tool.buildKalina(info.uid)
+			data["kalina"] = res[1]
+			data["spend"] = res[0]
+		}
+	}
+
+	tool.html["kalina"].Execute(w,data)
 }
 
 func (tool *Tool)loadHtml(key, file_name string) {

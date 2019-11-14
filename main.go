@@ -124,9 +124,14 @@ func (tool *Tool) Run() error {
 
 	// 网页服务
 	tool.loadHtml("chip","./HTML/chip.html")
+	tool.loadHtml("kalina","./HTML/kalina.html")
 	router := httprouter.New()
-	router.GET("/chip", tool.getHome)
-	router.POST("/chip", tool.postHome)
+	router.GET("/", tool.getChip)
+	router.POST("/", tool.postChip)
+	router.GET("/chip", tool.getChip)
+	router.POST("/chip", tool.postChip)
+	router.GET("/kalina", tool.getKalina)
+	router.POST("/kalina", tool.postKalina)
 	httpSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
