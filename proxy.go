@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"fmt"
 
 	"github.com/elazarl/goproxy"
 	"github.com/pkg/errors"

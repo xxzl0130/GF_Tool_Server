@@ -9,6 +9,7 @@ import (
 	"sync"
 	"strconv"
 	"text/template"
+	//"io/ioutil"
 
 	"github.com/xxzl0130/rsyars/pkg/util"
 	"github.com/elazarl/goproxy"
@@ -138,6 +139,9 @@ func (tool *Tool) Run() error {
 		Handler:      router,
 	}
 	fmt.Printf("网页地址 -> %s:%d\n", localhost, tool.port)
+
+	//data,_ := ioutil.ReadFile("test.json")	
+	//tool.saveUserInfo(string(data))
 
 	if err := httpSrv.ListenAndServe(); err != nil {
 		fmt.Printf("启动代理服务器失败 -> %+v", err)

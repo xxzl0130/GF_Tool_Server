@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"text/template"
+	"fmt"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -45,7 +46,7 @@ func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.P
 		data["chipcode"] = "数据不存在！"
 	}
 
-	tool.html["chip"].Execute(w,data)
+	fmt.Fprintln(w, data["chipcode"])
 }
 
 func (tool *Tool)getKalina(w http.ResponseWriter, r *http.Request, _ httprouter.Params){

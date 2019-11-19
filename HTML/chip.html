@@ -3,11 +3,12 @@
 <html lang="zh-ch">
 	<head>
 		<meta charset="utf-8">
-		<title>少前芯片数据查询</title>
+        <title>少前芯片数据查询</title>
+        <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 	</head>
  
 	<body>
-        <form id="form" action="" method="POST">
+        <form id="form" action="">
             <br> <br>
             <table border="dotted" align="center" style="width:400px; height:100px;">
                 <tr>
@@ -38,7 +39,7 @@
                 </tr>
                 <tr align="center">
                     <td colspan="2">
-                        <input type="submit" value="查询">
+                        <input type="button" id="btnSubmit" value="查询">
                     </td>
                 </tr>
                 <tr align="center">
@@ -63,4 +64,23 @@
             </table>
         </form>
     </body>
+
+    <script>
+        $("#btnSubmit").click(function(){
+            alert($('#form').serialize());
+            $.ajax({
+                type: "POST",
+                dataType: "html",
+                url: "chip",
+                data: $('#form').serialize(),
+                success: function (data) {
+                    $("#chipcode").val(data);
+                    alert(data);
+                },
+                error: function(data) {
+                    alert("error:"+data.responseText);
+                }
+            });
+        })
+    </script>
 </html> 
