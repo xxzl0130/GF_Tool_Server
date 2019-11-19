@@ -3,11 +3,12 @@
 <html lang="zh-ch">
 	<head>
 		<meta charset="utf-8">
-		<title>少前芯片数据查询</title>
+        <title>格林娜好感度查询</title>
+        <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 	</head>
  
 	<body>
-        <form id="form" action="" method="POST">
+        <form id="form" action="">
             <br> <br>
             <table border="dotted" align="center" style="width:400px; height:100px;">
                 <tr>
@@ -16,19 +17,19 @@
                 <tr align="center">
                     <td colspan="2">
                     	<br>
-                        UID：<input type="text" name="uid" value={{.uid}}><br><br>
-			            昵称： <input type="text" name="name" value={{.name}}><br><br>
+                        UID：<input type="text" name="uid" value=""><br><br>
+			            昵称： <input type="text" name="name" value=""><br><br>
                     </td>
                 </tr>
                 <tr align="center">
                     <td colspan="2">
-                        <input type="submit" value="查询">
+                        <input type="button" id="btnSubmit" value="查询">
                     </td>
                 </tr>
                 <tr align="center">
                     <td colspan="2">
-                        好感度：<input type="text" id="kalina" value={{.kalina}} form="nopost"><br><br>
-                        氪金量：<input type="text" id="spend" value={{.spend}} form="nopost">
+                        好感度：<input type="text" id="kalina" value="" form="nopost"><br><br>
+                        氪金量：<input type="text" id="spend" value="" form="nopost">
                     </td>
                 </tr>
                 <tr align="left" form="nopost">
@@ -36,7 +37,9 @@
                         说明：将手机连接任意WiFi，长按打开WiFi的高级设置，代理选择“自动代理”，代理地址为：<br>
                         http://gf.xuanxuan.tech:3333/GF.pac<br>
                         然后重启游戏，登陆完成后在本页面填写UID和昵称，然后查询。<br>
-                        数据有效期为10分钟。</p>
+                        数据有效期为10分钟。<br>
+                        台服需要下载安装<a href="http://gf.xuanxuan.tech:3333/ca.crt">证书</a>
+                    </p>
                     </td>
                 </tr>
                 <tr align="center" form="nopost">
@@ -48,4 +51,23 @@
             </table>
         </form>
     </body>
+
+    <script>
+            $("#btnSubmit").click(function(){
+                $.ajax({
+                    type: "POST",
+                    dataType: "html",
+                    url: "kalina",
+                    data: $('#form').serialize(),
+                    success: function (data) {
+                        var value = data.split(";")
+                        $("#kalina").val(value[0]);
+                        $("#spend").val(value[1]);
+                    },
+                    error: function(data) {
+                        alert("error:"+data);
+                    }
+                });
+            })
+        </script>
 </html> 

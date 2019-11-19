@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"sync"
 	"strconv"
-	"text/template"
 	//"io/ioutil"
 
 	"github.com/xxzl0130/rsyars/pkg/util"
@@ -31,7 +30,7 @@ type Tool struct{
 	infoMutex *sync.RWMutex			// 锁
 	port int						// 代理端口
 	timeout int64					// 数据超时
-	html map[string]*template.Template // 网页数据
+	html map[string]string			// 网页数据
 }
 
 func main(){
@@ -44,7 +43,7 @@ func main(){
 		infoMutex : new(sync.RWMutex),
 		port : 8080,
 		timeout : 600, // 10分钟超时
-		html : make(map[string]*template.Template),
+		html : make(map[string]string),
 	}
 	if err := tool.Run(); err != nil {
 		panic(fmt.Sprintf("程序启动失败 -> %+v", err))

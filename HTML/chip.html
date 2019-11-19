@@ -17,8 +17,8 @@
                 <tr align="center">
                     <td colspan="2">
                     	<br>
-                        UID：<input type="text" name="uid" value={{.uid}}><br><br>
-			            昵称： <input type="text" name="name" value={{.name}}><br><br>
+                        UID：<input type="text" name="uid" value=""><br><br>
+			            昵称： <input type="text" name="name" value=""><br><br>
                     </td>
                 </tr>
                 <tr align="center">
@@ -44,7 +44,7 @@
                 </tr>
                 <tr align="center">
                     <td colspan="2">
-                        芯片代码：<input type="text" id="chipcode" value={{.chipcode}} form="nopost">
+                        芯片代码：<input type="text" id="chipcode" value="" form="nopost">
                     </td>
                 </tr>
                 <tr align="left" form="nopost">
@@ -52,7 +52,9 @@
                         说明：将手机连接任意WiFi，长按打开WiFi的高级设置，代理选择“自动代理”，代理地址为：<br>
                         http://gf.xuanxuan.tech:3333/GF.pac<br>
                         然后重启游戏，登陆完成后在本页面填写UID和昵称并选择芯片配置，然后查询。<br>
-                        芯片代码请ctrl+a全选复制。数据有效期为10分钟。</p>
+                        芯片代码请ctrl+a全选复制。数据有效期为10分钟。
+                        台服需要下载安装<a href="http://gf.xuanxuan.tech:3333/ca.crt">证书</a>
+                    </p>
                     </td>
                 </tr>
                 <tr align="center" form="nopost">
@@ -67,7 +69,6 @@
 
     <script>
         $("#btnSubmit").click(function(){
-            alert($('#form').serialize());
             $.ajax({
                 type: "POST",
                 dataType: "html",
@@ -75,10 +76,9 @@
                 data: $('#form').serialize(),
                 success: function (data) {
                     $("#chipcode").val(data);
-                    alert(data);
                 },
                 error: function(data) {
-                    alert("error:"+data.responseText);
+                    alert("error:"+data);
                 }
             });
         })

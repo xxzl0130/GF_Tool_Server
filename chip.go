@@ -136,8 +136,8 @@ func (tool *Tool) buildKalina(uid string) [2]string{
 		//fmt.Printf("解析JSON数据失败 -> %+v\n", err)
 		return str
 	}
-	str[0] = fmt.Sprintf("\"%v 元\"",value.Record.Spend_point)
-	str[1] = fmt.Sprintf("\"%v  Lv.%v/30\"", value.Kalina.Favor, value.Kalina.Level)
+	str[0] = fmt.Sprintf("%v 元",value.Record.Spend_point)
+	str[1] = fmt.Sprintf("%v  Lv.%v/30", value.Kalina.Favor, value.Kalina.Level)
 	return str
 }
 
