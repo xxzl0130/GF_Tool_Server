@@ -35,6 +35,7 @@ func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.P
 		chip = "数据不存在！"
 	}
 
+	w.Header().Set("Access-Control-Allow-Origin","*")
 	fmt.Fprintln(w, chip)
 }
 
@@ -45,6 +46,7 @@ func (tool *Tool)getKalina(w http.ResponseWriter, r *http.Request, _ httprouter.
 func (tool *Tool)postKalina(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
 	r.ParseForm()
 
+	w.Header().Set("Access-Control-Allow-Origin","*")
 	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
 	if isPresent && r.PostForm["name"][0] == info.name{
 		res := tool.buildKalina(info.uid)

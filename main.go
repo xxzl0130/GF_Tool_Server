@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"regexp"
 	"time"
-	"path/filepath"
 	"sync"
 	"strconv"
 	//"io/ioutil"
@@ -109,27 +108,17 @@ func (tool *Tool) Run() error {
 	}
 	go srv.ListenAndServe()
 
-	// PAC文件服务
-	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.Dir("."+string(filepath.Separator)+"PACFile")))
-	fileSrv := &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		Addr:         ":3333",
-		Handler:      mux,
-	}
 	go tool.watchdog()
-	go fileSrv.ListenAndServe()
 
 	// 网页服务
 	tool.loadHtml("chip","./HTML/chip.html")
 	tool.loadHtml("kalina","./HTML/kalina.html")
 	router := httprouter.New()
-	router.GET("/", tool.getChip)
-	router.POST("/", tool.postChip)
-	router.GET("/chip", tool.getChip)
+	//router.GET("/", tool.getChip)
+	//router.POST("/", tool.postChip)
+	//router.GET("/chip", tool.getChip)
 	router.POST("/chip", tool.postChip)
-	router.GET("/kalina", tool.getKalina)
+	//router.GET("/kalina", tool.getKalina)
 	router.POST("/kalina", tool.postKalina)
 	httpSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
@@ -142,7 +131,7 @@ func (tool *Tool) Run() error {
 	//data,_ := ioutil.ReadFile("test.json")	
 	//tool.saveUserInfo(string(data))
 
-	if err := httpSrv.ListenAndServe(); err != nil {
+	if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
 		fmt.Printf("启动代理服务器失败 -> %+v", err)
 	}
 	return nil
