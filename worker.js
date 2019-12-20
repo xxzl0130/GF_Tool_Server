@@ -2,21 +2,24 @@ addEventListener('fetch', event => {
     event.respondWith(handleRequest(event.request))
 })
 
+const method = {
+    method: "GET"
+};
+
+function getHtml(url) {
+    const response = await fetch(url, method);
+    var resptxt = await response.text();
+    return resptxt;
+}
+
 async function htmlhandle(request) {
     var urls = new URL(request.url);
-    const init = {
-        method: "GET"
-    };
     var base = "https://raw.githubusercontent.com/xxzl0130/GF_Tool_Server/master/HTML";
     if (urls.pathname == "/" || urls.pathname == "/chip") {
-        const response = await fetch(base + "/chip.html", init);
-		var resptxt = await response.text();
-        return resptxt;
+        return getHtml(base + "/chip.html");
     }
     else if (urls.pathname == "/kalina") {
-        const response = await fetch(base + "/kalina.html", init);
-		var resptxt = await response.text();
-        return resptxt;
+        return getHtml(base + "/kalina.html");
     }
     return "404 Not Found!";
 }
