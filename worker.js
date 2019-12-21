@@ -20,7 +20,7 @@ async function htmlhandle(request) {
         return getHtml(base + "chip.html");
     }
     else{
-        var json = JSON.parse(getHtml(base + "list.json"));
+        var json = JSON.parse(await getHtml(base + "list.json"));
         for (var item in json){
             if(json[item].path == urls.pathname){
                 return getHtml(base + json[item].file)
