@@ -6,7 +6,7 @@ const method = {
     method: "GET"
 };
 
-function getHtml(url) {
+async function getHtml(url) {
     const response = await fetch(url, method);
     var resptxt = await response.text();
     return resptxt;
@@ -14,22 +14,18 @@ function getHtml(url) {
 
 async function htmlhandle(request) {
     var urls = new URL(request.url);
-    var base = "https://raw.githubusercontent.com/xxzl0130/GF_Tool_Server/master/HTML";
+    var base = "https://raw.githubusercontent.com/xxzl0130/GF_Tool_Server/master/HTML/";
+
     if (urls.pathname == "/" || urls.pathname == "/chip") {
-        return getHtml(base + "/chip.html");
+        return getHtml(base + "chip.html");
     }
-    else if (urls.pathname == "/kalina") {
-        return getHtml(base + "/kalina.html");
-    }
-    else if (urls.pathname == "/build-up") {
-        const response = await fetch(base + "/build-up.html", init);
-		var resptxt = await response.text();
-        return resptxt;
-    }
-    else if (urls.pathname == "/resource") {
-        const response = await fetch(base + "/resource.html", init);
-		var resptxt = await response.text();
-        return resptxt;
+    else{
+        var json = JSON.parse(getHtml(base + "list.json"));
+        for (var item in json){
+            if(json[item].path == urls.pathname){
+                return getHtml(base + json[item].file)
+            }
+        }
     }
     return "404 Not Found!";
 }
