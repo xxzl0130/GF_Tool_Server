@@ -21,6 +21,16 @@ async function htmlhandle(request) {
     else if (urls.pathname == "/kalina") {
         return getHtml(base + "/kalina.html");
     }
+    else if (urls.pathname == "/build-up") {
+        const response = await fetch(base + "/build-up.html", init);
+		var resptxt = await response.text();
+        return resptxt;
+    }
+    else if (urls.pathname == "/resource") {
+        const response = await fetch(base + "/resource.html", init);
+		var resptxt = await response.text();
+        return resptxt;
+    }
     return "404 Not Found!";
 }
 
