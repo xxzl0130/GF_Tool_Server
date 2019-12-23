@@ -14,5 +14,9 @@
     {
         "path": "/resource",
         "file": "/resource.html"
+    },
+    {
+        "path": "/budget",
+        "file": "/budget.html"
     }
 ]
