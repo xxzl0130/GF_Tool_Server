@@ -13,8 +13,8 @@
 		const button = document.getElementById('submit');
 
 		let getPv = async function () {
-			const pvUrl = 'https://www.fc4soda.moe/kis3/stats?view=count&url=gf.xuanxuan.tech:8080/kalina&format=json';
-			const pvChartUrl = 'https://www.fc4soda.moe/kis3/stats?view=months&url=gf.xuanxuan.tech:8080/kalina&format=chart';
+			const pvUrl = 'https://www.fc4soda.moe/kis3/stats?view=count&url=gf.xuanxuan.tech/kalina&format=json';
+			const pvChartUrl = 'https://www.fc4soda.moe/kis3/stats?view=months&url=gf.xuanxuan.tech/kalina&format=chart';
 			try {
 				const response = await fetch(pvUrl, {
 					method: 'get'
