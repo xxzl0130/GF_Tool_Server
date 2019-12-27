@@ -19,21 +19,20 @@ async function htmlhandle(request) {
     var json = JSON.parse(await getHtml(base + "list.json"));
     if (urls.pathname == "/") {
         var html = `<html lang="zh">
-
-        <head>
-            <title>轩轩的少前工具站</title>
-            <meta charset="utf-8">
-        </head>
-        <link rel="icon" href="https://static.xuanxuan.tech/favicon.ico" type="image/x-icon" />
-        <body>
-        <h2>轩轩的少前工具站</h2>
-        <p>`
+<head>
+<title>轩轩的少前工具站</title>
+<meta charset="utf-8">
+</head>
+<link rel="icon" href="https://static.xuanxuan.tech/favicon.ico" type="image/x-icon" />
+<body>
+<h2>轩轩的少前工具站</h2>
+<p>`
 
         for (var item in json){
             var url = base + json[item].file;
-            html += `<a href="${url}">${json[item].name}</a>
-            <br>`
+            html += '<a href="' + url + '">' + json[item].name + '</a><br>\n'
         }
+        html += `</p>\n</body>\n</html>`
 
         return html;
     }
