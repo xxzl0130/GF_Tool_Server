@@ -8,8 +8,32 @@
 <link rel="icon" href="http://static.xuanxuan.tech/favicon.ico" type="image/x-icon" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css" />
 <script>
+	// from https://github.com/fc4soda/gfBadge/blob/master/src/index.js
+	const encodeStr = (str) => {
+		return encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+			function toSolidBytes(match, p1) {
+				return String.fromCharCode('0x' + p1);
+			});
+	}
+	const b64CharToByteArray = (byteCharacters, sliceSize = 512) => {
+		const byteArrays = [];
+
+		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+			const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+			const byteNumbers = new Array(slice.length);
+			for (let i = 0; i < slice.length; i++) {
+				byteNumbers[i] = slice.charCodeAt(i);
+			}
+
+			const byteArray = new Uint8Array(byteNumbers);
+			byteArrays.push(byteArray);
+		}
+
+		return byteArrays;
+	}
 	window.onload = function () {
-		var url = 'https://ar.xuanxuan.tech:8080/chip';
+		var url = 'http://127.0.0.1:8080/chip';
 		const button = document.getElementById('submit');
 
 		let getPv = async function () {
@@ -45,6 +69,20 @@
 			return str.join("&");
 		}
 
+		var saveData = (function () {
+			var a = document.createElement("a");
+			document.body.appendChild(a);
+			a.style = "display: none";
+			return function (byteArrays, contentType, fileName) {
+				var blob = new Blob(byteArrays, { type: contentType }),
+					url = window.URL.createObjectURL(blob);
+				a.href = url;
+				a.download = fileName;
+				a.click();
+				window.URL.revokeObjectURL(url);
+			};
+		}());
+
 		button.addEventListener('click', async _ => {
 			document.getElementById('msg').innerHTML = '正在查询……';
 
@@ -67,6 +105,7 @@
 				xhr.onload = function () {
 					document.getElementById('msg').innerHTML = '查询结束。';
 					document.getElementById('chipResult').value = this.responseText;
+					saveData(b64CharToByteArray(encodeStr(this.responseText)), "text/plain", "code.txt");
 				}
 			} catch (err) {
 				console.error(`Get chip data error: ${err}`);

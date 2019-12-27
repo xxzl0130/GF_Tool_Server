@@ -18,6 +18,7 @@ func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.P
 
 	chip := ""
 	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
+	fmt.Printf("uid:%v, name:%v\n",r.PostForm["uid"][0],r.PostForm["name"][0])
 	if isPresent{
 		if r.PostForm["name"][0] == info.name{
 			rule := r.PostForm["locked"][0] + r.PostForm["equipped"][0]

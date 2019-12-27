@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/elazarl/goproxy"
 	"github.com/pkg/errors"
@@ -76,7 +77,7 @@ func (tool *Tool) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.R
 			resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 			return resp
 		}
-
+		//_ = ioutil.WriteFile("response.json", []byte(data), 0)
 		// 先保存数据
 		tool.saveUserInfo(data)
 	}
@@ -97,7 +98,7 @@ func (tool *Tool) saveUserInfo(data string){
 		allData : data,
 		time : time.Now().Unix(),
 	}
-	//fmt.Printf("uid:%v, name:%v\n",info.Info.User_id,info.Info.Name)
+	fmt.Printf("uid:%v, name:%v\n",info.Info.User_id,info.Info.Name)
 	tool.infoMutex.Lock()
 	tool.userinfo[userinfo.uid] = userinfo
 	tool.infoMutex.Unlock()
