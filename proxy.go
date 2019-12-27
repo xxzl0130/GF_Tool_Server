@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"fmt"
+	//"fmt"
 
 	"github.com/elazarl/goproxy"
 	"github.com/pkg/errors"
@@ -98,7 +98,7 @@ func (tool *Tool) saveUserInfo(data string){
 		allData : data,
 		time : time.Now().Unix(),
 	}
-	fmt.Printf("uid:%v, name:%v\n",info.Info.User_id,info.Info.Name)
+	//fmt.Printf("uid:%v, name:%v\n",info.Info.User_id,info.Info.Name)
 	tool.infoMutex.Lock()
 	tool.userinfo[userinfo.uid] = userinfo
 	tool.infoMutex.Unlock()

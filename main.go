@@ -7,7 +7,7 @@ import (
 	"time"
 	"sync"
 	"strconv"
-	"io/ioutil"
+	//"io/ioutil"
 
 	"github.com/xxzl0130/rsyars/pkg/util"
 	"github.com/elazarl/goproxy"
@@ -114,12 +114,12 @@ func (tool *Tool) Run() error {
 	tool.loadHtml("chip","./HTML/chip.html")
 	tool.loadHtml("kalina","./HTML/kalina.html")
 	router := httprouter.New()
-	router.GET("/", tool.getChip)
-	router.POST("/", tool.postChip)
-	router.GET("/chip", tool.getChip)
+	//router.GET("/", tool.getChip)
+	//router.POST("/", tool.postChip)
+	//router.GET("/chip", tool.getChip)
 	router.POST("/chip", tool.postChip)
 	router.POST("/chipJson", tool.postChipJson)
-	router.GET("/kalina", tool.getKalina)
+	//router.GET("/kalina", tool.getKalina)
 	router.POST("/kalina", tool.postKalina)
 	httpSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
@@ -129,14 +129,11 @@ func (tool *Tool) Run() error {
 	}
 	fmt.Printf("网页地址 -> %s:%d\n", localhost, tool.port)
 
-	data,e := ioutil.ReadFile("response.json")
-	if e != nil{
-		fmt.Printf("读取文件失败 -> %+v", e)
-	}
-	tool.saveUserInfo(string(data))
+	//data,e := ioutil.ReadFile("response.json")
+	//tool.saveUserInfo(string(data))
 
-	//if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
-	if err := httpSrv.ListenAndServe(); err != nil {
+	if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
+	//if err := httpSrv.ListenAndServe(); err != nil {
 		fmt.Printf("启动代理服务器失败 -> %+v", err)
 	}
 	return nil
