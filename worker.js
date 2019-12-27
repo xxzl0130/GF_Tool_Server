@@ -29,8 +29,7 @@ async function htmlhandle(request) {
 <p>`
 
         for (var item in json){
-            var url = base + json[item].file;
-            html += '<a href="' + url + '">' + json[item].name + '</a><br>\n'
+            html += '<a href=\"' + json[item].path + '\">' + json[item].name + '</a><br>\n'
         }
         html += `</p>\n</body>\n</html>`
 
