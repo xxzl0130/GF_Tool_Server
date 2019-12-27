@@ -16,11 +16,28 @@ async function htmlhandle(request) {
     var urls = new URL(request.url);
     var base = "https://raw.githubusercontent.com/xxzl0130/GF_Tool_Server/master/HTML/";
 
-    if (urls.pathname == "/" || urls.pathname == "/chip") {
-        return getHtml(base + "chip.html");
+    var json = JSON.parse(await getHtml(base + "list.json"));
+    if (urls.pathname == "/") {
+        var html = `<html lang="zh">
+
+        <head>
+            <title>轩轩的少前工具站</title>
+            <meta charset="utf-8">
+        </head>
+        <link rel="icon" href="https://static.xuanxuan.tech/favicon.ico" type="image/x-icon" />
+        <body>
+        <h2>轩轩的少前工具站</h2>
+        <p>`
+
+        for (var item in json){
+            var url = base + json[item].file;
+            html += `<a href="${url}">${json[item].name}</a>
+            <br>`
+        }
+
+        return html;
     }
     else{
-        var json = JSON.parse(await getHtml(base + "list.json"));
         for (var item in json){
             if(json[item].path == urls.pathname){
                 return getHtml(base + json[item].file)

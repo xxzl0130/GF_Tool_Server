@@ -1,17 +1,11 @@
 package main
 
 import (
-	"io/ioutil"
 	"net/http"
-	"os"
 	"fmt"
 
 	"github.com/julienschmidt/httprouter"
 )
-
-func (tool *Tool)getChip(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
-	fmt.Fprintln(w,tool.html["chip"])
-}
 
 func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
 	r.ParseForm()
@@ -58,10 +52,6 @@ func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprout
 	fmt.Fprintln(w, json)
 }
 
-func (tool *Tool)getKalina(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
-	fmt.Fprintln(w,tool.html["kalina"])
-}
-
 func (tool *Tool)postKalina(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
 	r.ParseForm()
 
@@ -73,17 +63,4 @@ func (tool *Tool)postKalina(w http.ResponseWriter, r *http.Request, _ httprouter
 	}else{
 		fmt.Fprintln(w,"数据不存在！;请检查！")
 	}
-}
-
-func (tool *Tool)loadHtml(key, file_name string) {
-	data,_ := tool.readFile(file_name)
-	tool.html[key] = string(data)
-}
-func (tool *Tool)readFile(file_name string) ([]byte, error) {
-	fi, err := os.Open(file_name)
-	if err != nil {
-		panic(err)
-	}
-	defer fi.Close()
-	return ioutil.ReadAll(fi)
 }

@@ -1,22 +1,27 @@
 [
     {
         "path": "/build-up",
-        "file": "/build-up.html"
+        "file": "/build-up.html",
+        "name": "生煎资源规划计算器"
     },
     {
         "path": "/chip",
-        "file": "/chip.html"
+        "file": "/chip.html",
+        "name": "芯片数据读取"
     },
     {
         "path": "/kalina",
-        "file": "/kalina.html"
+        "file": "/kalina.html",
+        "name": "格林娜信息读取"
     },
     {
         "path": "/resource",
-        "file": "/resource.html"
+        "file": "/resource.html",
+        "name": "后勤提醒"
     },
     {
         "path": "/budget",
-        "file": "/budget.html"
+        "file": "/budget.html",
+        "name": "收支计算器"
     }
 ]

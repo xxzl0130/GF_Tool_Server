@@ -111,15 +111,9 @@ func (tool *Tool) Run() error {
 	go tool.watchdog()
 
 	// 网页服务
-	tool.loadHtml("chip","./HTML/chip.html")
-	tool.loadHtml("kalina","./HTML/kalina.html")
 	router := httprouter.New()
-	//router.GET("/", tool.getChip)
-	//router.POST("/", tool.postChip)
-	//router.GET("/chip", tool.getChip)
 	router.POST("/chip", tool.postChip)
 	router.POST("/chipJson", tool.postChipJson)
-	//router.GET("/kalina", tool.getKalina)
 	router.POST("/kalina", tool.postKalina)
 	httpSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
