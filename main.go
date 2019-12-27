@@ -118,6 +118,7 @@ func (tool *Tool) Run() error {
 	router.POST("/", tool.postChip)
 	router.GET("/chip", tool.getChip)
 	router.POST("/chip", tool.postChip)
+	router.POST("/chipJson", tool.postChipJson)
 	router.GET("/kalina", tool.getKalina)
 	router.POST("/kalina", tool.postKalina)
 	httpSrv := &http.Server{

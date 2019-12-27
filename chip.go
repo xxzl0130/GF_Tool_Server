@@ -6,10 +6,13 @@ import (
 	"sort"
 	"time"
 	"fmt"
+	"encoding/base64"
 
 	//"github.com/xxzl0130/rsyars/pkg/util"
 	"github.com/xxzl0130/rsyars/rsyars.adapter/hycdes"
 	"github.com/xxzl0130/rsyars/rsyars.x/soc"
+
+	cipher "github.com/xxzl0130/GF_Tool_Server/GF_cipher"
 )
 
 // 存储详细游戏数据的结构体，外层以UID为map的key
@@ -19,6 +22,7 @@ type UserInfo struct{
 	name string			// 游戏昵称
 	uid  string			// 游戏UID
 	chipCode string		// 芯片代码
+	chipJson string		// 芯片json
 	kalinaLevel string	// 格林娜好感等级
 	kalinnaFavor string	// 格林娜好感度
 	spendPoint string	// 消费
@@ -47,6 +51,19 @@ type GF_Simple_Json struct{
 	Info User_Info `json:"user_info"`
 	Record UserRecord `json:"user_record"`
 	Kalina KalinaData `json:"kalina_with_user_info"`
+}
+type GF_Chip_Json struct{
+	SoC map[string]*soc.SoC `json:"chip_with_user_info"`
+}
+
+func GzipCompress(data []byte) string{
+	gzip, err := cipher.GzipCompress([]byte(data))
+	if err != nil {
+		return "数据处理错误！"
+	}
+	b64 := base64.StdEncoding
+	b64str := "#" + b64.EncodeToString(gzip)
+	return b64str
 }
 
 func (tool *Tool) buildChips(uid string) string{
@@ -106,12 +123,49 @@ func (tool *Tool) buildChips(uid string) string{
 		//rs.log.Errorf("生成芯片代码失败 -> %+v", err)
 		return "数据解析错误！"
 	}
-	info.chipCode = c
+	info.chipCode = GzipCompress([]byte(c))
 	tool.infoMutex.Lock()
 	tool.userinfo[uid] = info
 	tool.infoMutex.Unlock()
 
 	return info.chipCode
+}
+
+func (tool *Tool) buildChipJson(uid string) string{
+	tool.infoMutex.RLock()
+	info, isPresent := tool.userinfo[uid]
+	tool.infoMutex.RUnlock()
+	if !isPresent{
+		return "数据不存在！"
+	}
+	if len(info.chipJson) > 5{
+		return info.chipJson
+	}
+	if time.Now().Unix() - info.time < 5{
+		return "请勿频繁请求！"
+	}
+	tool.infoMutex.Lock()
+	info.time = time.Now().Unix()
+	tool.userinfo[uid] = info // 更新时间避免被清理
+	tool.infoMutex.Unlock()
+
+	girls := GF_Json{}
+	if err := json.Unmarshal([]byte(info.allData), &girls); err != nil {
+		return "数据解析错误！"
+	}
+
+	tmp := GF_Chip_Json{
+		SoC : girls.SoC,
+	}
+
+	data, _ := json.Marshal(tmp)
+
+	info.chipJson = GzipCompress(data) //保存json
+	tool.infoMutex.Lock()
+	tool.userinfo[uid] = info
+	tool.infoMutex.Unlock()
+
+	return info.chipJson;
 }
 
 func (tool *Tool) buildKalina(uid string) [2]string{

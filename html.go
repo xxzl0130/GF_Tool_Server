@@ -18,7 +18,6 @@ func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.P
 
 	chip := ""
 	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
-	fmt.Printf("uid:%v, name:%v\n",r.PostForm["uid"][0],r.PostForm["name"][0])
 	if isPresent{
 		if r.PostForm["name"][0] == info.name{
 			rule := r.PostForm["locked"][0] + r.PostForm["equipped"][0]
@@ -30,7 +29,7 @@ func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.P
 			}
 			chip = tool.buildChips(info.uid)
 		}else{
-			chip = info.name
+			chip = "数据不存在！"
 		}
 	}else{
 		chip = "数据不存在！"
@@ -38,6 +37,25 @@ func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.P
 
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	fmt.Fprintln(w, chip)
+}
+
+func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
+	r.ParseForm()
+
+	json := ""
+	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
+	if isPresent{
+		if r.PostForm["name"][0] == info.name{
+			json = tool.buildChipJson(info.uid)
+		}else{
+			json = info.name
+		}
+	}else{
+		json = "数据不存在！"
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	fmt.Fprintln(w, json)
 }
 
 func (tool *Tool)getKalina(w http.ResponseWriter, r *http.Request, _ httprouter.Params){

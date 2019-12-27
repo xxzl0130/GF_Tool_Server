@@ -7,6 +7,7 @@
 </head>
 <link rel="icon" href="http://static.xuanxuan.tech/favicon.ico" type="image/x-icon" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/pako@1.0.10/dist/pako.min.js"></script>
 <script>
 	// from https://github.com/fc4soda/gfBadge/blob/master/src/index.js
 	const encodeStr = (str) => {
@@ -32,9 +33,35 @@
 
 		return byteArrays;
 	}
+	// from https://www.jianshu.com/p/0d5791718b52
+	function handleCodePoints(array) {
+		var CHUNK_SIZE = 0x8000; // arbitrary number here, not too small, not too big
+		var index = 0;
+		var length = array.length;
+		var result = '';
+		var slice;
+		var arr = [];
+		for (var i = 0, _i = array.length; i < _i; i++) {
+			arr[i] = array[i];
+		}
+		while (index < length) {
+			slice = arr.slice(index, Math.min(index + CHUNK_SIZE, length)); // `Math.min` is not really necessary here I think
+			result += String.fromCharCode.apply(null, slice);
+			index += CHUNK_SIZE;
+		}
+		return result;
+	}
+
+	function unzip(str) {
+		var strData = window.atob(str);
+		var charData = strData.split('').map(function (x) { return x.charCodeAt(0); });
+		var binData = new Uint8Array(charData);
+		var data = pako.inflate(binData);
+		return handleCodePoints(data);
+	}
+
 	window.onload = function () {
-		var url = 'http://127.0.0.1:8080/chip';
-		const button = document.getElementById('submit');
+		var hosts = 'http://127.0.0.1:8080';
 
 		let getPv = async function () {
 			const pvUrl = 'https://www.fc4soda.moe/kis3/stats?view=count&url=gf.xuanxuan.tech/chip&format=json';
@@ -83,9 +110,7 @@
 			};
 		}());
 
-		button.addEventListener('click', async _ => {
-			document.getElementById('msg').innerHTML = '正在查询……';
-
+		let getReqData = function () {
 			let uid = getVal('input[name="uid"]');
 			let name = getVal('input[name="name"]');
 			let locked = getVal('input[name="lock-status"]:checked');
@@ -95,17 +120,49 @@
 			reqData.name = name.value;
 			reqData.locked = locked.value;
 			reqData.equipped = equipped.value;
+			return reqData;
+		}
 
+		document.getElementById('submit').addEventListener('click', async _ => {
+			document.getElementById('msg').innerHTML = '正在查询……';
 			try {
 				var xhr = new XMLHttpRequest();
-				xhr.open("POST", url, true);
+				xhr.open("POST", hosts + '/chip', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-				xhr.send(serialize(reqData));
+				xhr.send(serialize(getReqData()));
 
 				xhr.onload = function () {
 					document.getElementById('msg').innerHTML = '查询结束。';
-					document.getElementById('chipResult').value = this.responseText;
-					saveData(b64CharToByteArray(encodeStr(this.responseText)), "text/plain", "code.txt");
+					if (this.responseText[0] == '#') {
+						var b64 = this.responseText.split('#');
+						document.getElementById('chipResult').value = unzip(b64[1]);
+					}
+					else {
+						document.getElementById('chipResult').value = this.responseText;
+					}
+				}
+			} catch (err) {
+				console.error(`Get chip data error: ${err}`);
+			}
+		});
+
+		document.getElementById('export').addEventListener('click', async _ => {
+			document.getElementById('msg').innerHTML = '正在查询……';
+			try {
+				var xhr = new XMLHttpRequest();
+				xhr.open("POST", hosts + '/chipJson', true);
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+				xhr.send(serialize(getReqData()));
+
+				xhr.onload = function () {
+					document.getElementById('msg').innerHTML = '查询结束。';
+					if (this.responseText[0] == '#') {
+						var b64 = this.responseText.split('#');
+						saveData(b64CharToByteArray(encodeStr(unzip(b64[1]))), 'application/json', 'chip.json');
+					}
+					else {
+						document.getElementById('chipResult').value = this.responseText;
+					}
 				}
 			} catch (err) {
 				console.error(`Get chip data error: ${err}`);
@@ -115,6 +172,13 @@
 </script>
 <style>
 	#submit {
+		margin: 1rem auto;
+		display: block;
+		padding: .3rem 2rem;
+		font-size: 1.1rem;
+	}
+
+	#export {
 		margin: 1rem auto;
 		display: block;
 		padding: .3rem 2rem;
@@ -197,9 +261,14 @@
 					</div>
 				</div>
 				<div class="row">
+					<div class="col-sm"></div>
 					<div class="col-sm">
 						<button type="button" class="shadowed" id="submit">查询</button>
 					</div>
+					<div class="col-sm">
+						<button type="button" class="shadowed" id="export">导出</button>
+					</div>
+					<div class="col-sm"></div>
 				</div>
 				<div class="row responsive-label">
 					<div class="col-sm-12 col-md-3">
@@ -216,6 +285,8 @@
 		<pre>http://static.xuanxuan.tech/GF/GF.pac</pre>
 		<p>然后重启游戏，登陆完成后在本页面填写UID和昵称并选择芯片配置，然后查询。
 			<br>芯片代码请<code>Ctrl + A</code>全选复制。<b>数据有效期为10分钟。</b>
+			<br>选择“导出”可以下载json文件，可供<a href="https://bbs.nga.cn/read.php?pid=349288968">自动录入工具</a>转换为<a
+				href="https://bbs.nga.cn/read.php?tid=15287914">Excel版</a>。
 			<br>台服需要下载安装<a href="http://static.xuanxuan.tech/GF/ca.crt">证书</a>。
 		</p>
 	</div>
