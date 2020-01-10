@@ -79,6 +79,10 @@ func (tool *Tool) buildChips(uid string) string{
 	if time.Now().Unix() - info.time < 5{
 		return "请勿频繁请求！"
 	}
+	if info.ruleChanged{
+		info.chipJson = "";
+		info.ruleChanged = false;
+	}
 	tool.infoMutex.Lock()
 	info.time = time.Now().Unix()
 	tool.userinfo[uid] = info // 更新时间避免被清理
@@ -138,11 +142,15 @@ func (tool *Tool) buildChipJson(uid string) string{
 	if !isPresent{
 		return "数据不存在！"
 	}
-	if len(info.chipJson) > 5{
+	if len(info.chipJson) > 5 && !info.ruleChanged{
 		return info.chipJson
 	}
 	if time.Now().Unix() - info.time < 5{
 		return "请勿频繁请求！"
+	}
+	if info.ruleChanged{
+		info.chipCode = "";
+		info.ruleChanged = false;
 	}
 	tool.infoMutex.Lock()
 	info.time = time.Now().Unix()
@@ -157,6 +165,11 @@ func (tool *Tool) buildChipJson(uid string) string{
 	tmp := GF_Chip_Json{
 		SoC : girls.SoC,
 	}
+	for k, v := range tmp.SoC {
+		if !tool.checkSoc(v,info.rule){
+			delete(tmp.SoC,k)
+		}
+	}
 
 	data, _ := json.Marshal(tmp)
 
@@ -165,7 +178,7 @@ func (tool *Tool) buildChipJson(uid string) string{
 	tool.userinfo[uid] = info
 	tool.infoMutex.Unlock()
 
-	return info.chipJson;
+	return info.chipJson
 }
 
 func (tool *Tool) buildKalina(uid string) [2]string{

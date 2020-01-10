@@ -15,12 +15,15 @@ func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.P
 	if isPresent{
 		if r.PostForm["name"][0] == info.name{
 			rule := r.PostForm["locked"][0] + r.PostForm["equipped"][0]
-			if rule != info.rule{
+			if rule != info.rule || info.ruleChanged{
 				info.rule = rule
 				info.ruleChanged = true
 			}else{
 				info.ruleChanged = false
 			}
+			tool.infoMutex.Lock()
+			tool.userinfo[r.PostForm["uid"][0]] = info;
+			tool.infoMutex.Unlock()
 			chip = tool.buildChips(info.uid)
 		}else{
 			chip = "数据不存在！"
