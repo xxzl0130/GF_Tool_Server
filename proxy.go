@@ -116,20 +116,6 @@ func (tool *Tool) condition() goproxy.ReqConditionFunc {
 	}
 }
 
-func (tool *Tool) block() goproxy.ReqConditionFunc {
-	return func(req *http.Request, ctx *goproxy.ProxyCtx) bool {
-		if strings.HasSuffix(req.Host, "ppgame.com") {
-			if strings.HasSuffix(req.URL.Path, "/Index/index") || strings.HasSuffix(req.URL.Path, "/Index/getDigitalSkyNbUid") || strings.HasSuffix(req.URL.Path, "/Index/getUidTianxiaQueue") ||
-			  strings.HasSuffix(req.URL.Path, ".txt") || strings.HasSuffix(req.URL.Path, "/Index/version") ||
-			  strings.HasSuffix(req.URL.Path, "auth") || strings.HasSuffix(req.Host, "res.ppgame.com") || strings.HasSuffix(req.URL.Path, "index.php") {
-				return false
-			}
-			return true
-		}
-		return true
-	}
-}
-
 func (tool *Tool) getLocalhost() (string, error) {
 	conn, err := net.Dial("udp", "114.114.114.114:80")
 	if err != nil {

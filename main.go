@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"regexp"
 	//"io/ioutil"
+	"text/template"
 
 	"github.com/xxzl0130/rsyars/pkg/util"
 	"github.com/elazarl/goproxy"
@@ -27,7 +28,8 @@ type Tool struct{
 	infoMutex *sync.RWMutex			// 锁
 	port int						// 代理端口
 	timeout int64					// 数据超时
-	html map[string]string			// 网页数据
+	html map[string]*template.Template			// 网页数据
+	proxyInfo map[string]string     // 显示在HTML中的代理信息
 }
 
 func main(){
@@ -38,7 +40,8 @@ func main(){
 		infoMutex : new(sync.RWMutex),
 		port : 8080,
 		timeout : 600, // 10分钟超时
-		html : make(map[string]string),
+		html : make(map[string]*template.Template),
+		proxyInfo : make(map[string]string),
 	}
 	if err := tool.Run(); err != nil {
 		panic(fmt.Sprintf("程序启动失败 -> %+v", err))
@@ -87,6 +90,8 @@ func (tool *Tool) Run() error {
 		return err
 	}
 	fmt.Printf("代理地址 -> %s:%d\n", localhost, tool.port + 1)
+	tool.proxyInfo["proxy"] = fmt.Sprintf("%s:%d", localhost, tool.port + 1)
+	tool.proxyInfo["host"] = fmt.Sprintf("\"http://%s:%d\"", localhost, tool.port)
 
 	// 代理服务
 	proxy := goproxy.NewProxyHttpServer()
@@ -94,10 +99,6 @@ func (tool *Tool) Run() error {
 	proxy.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("sn-game.txwy.tw"))).
 		HandleConnect(goproxy.AlwaysMitm)
 	proxy.OnResponse(tool.condition()).DoFunc(tool.onResponse)
-	proxy.OnRequest(tool.block()).DoFunc(
-		func(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
-			return r, goproxy.NewResponse(r, goproxy.ContentTypeText, http.StatusForbidden, "Forbidden!")
-		})
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -109,11 +110,15 @@ func (tool *Tool) Run() error {
 	go tool.watchdog()
 
 	// 网页服务
+	tool.loadHtml("chip","chip.html")
+	tool.loadHtml("kalina","kalina.html")
 	router := httprouter.New()
 	router.POST("/chip", tool.postChip)
+	router.GET("/chip", tool.getChip)
+	router.GET("/", tool.getChip)
 	router.POST("/chipJson", tool.postChipJson)
 	router.POST("/kalina", tool.postKalina)
-	router.POST("/json", tool.postJson)
+	router.GET("/kalina", tool.getKalina)
 	httpSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -125,8 +130,8 @@ func (tool *Tool) Run() error {
 	//data,_ := ioutil.ReadFile("response.json")
 	//tool.saveUserInfo(string(data))
 
-	if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
-	//if err := httpSrv.ListenAndServe(); err != nil {
+	//if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
+	if err := httpSrv.ListenAndServe(); err != nil {
 		fmt.Printf("启动代理服务器失败 -> %+v", err)
 	}
 	return nil
