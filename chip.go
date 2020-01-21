@@ -75,9 +75,6 @@ func (tool *Tool) buildChips(uid string) string{
 	if len(info.chipCode) > 5 && !info.ruleChanged{
 		return info.chipCode
 	}
-	if time.Now().Unix() - info.time < 5{
-		return "请勿频繁请求！"
-	}
 	if info.ruleChanged{
 		info.chipJson = "";
 		info.ruleChanged = false;
@@ -143,9 +140,6 @@ func (tool *Tool) buildChipJson(uid string) string{
 	}
 	if len(info.chipJson) > 5 && !info.ruleChanged{
 		return info.chipJson
-	}
-	if time.Now().Unix() - info.time < 5{
-		return "请勿频繁请求！"
 	}
 	if info.ruleChanged{
 		info.chipCode = "";
