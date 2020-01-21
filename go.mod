@@ -4,7 +4,12 @@ go 1.13
 
 require (
 	github.com/elazarl/goproxy v0.0.0-20191011121108-aa519ddbe484
+	github.com/gobuffalo/envy v1.8.1 // indirect
+	github.com/gobuffalo/logger v1.0.3 // indirect
+	github.com/gobuffalo/packr v1.30.1
+	github.com/gobuffalo/packr/v2 v2.7.1 // indirect
 	github.com/julienschmidt/httprouter v1.3.0
+	github.com/karrick/godirwalk v1.14.1 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/xxzl0130/rsyars v0.3.5
 )
