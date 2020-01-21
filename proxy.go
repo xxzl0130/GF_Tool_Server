@@ -116,16 +116,6 @@ func (tool *Tool) condition() goproxy.ReqConditionFunc {
 	}
 }
 
-func (tool *Tool) block() goproxy.ReqConditionFunc {
-	return func(req *http.Request, ctx *goproxy.ProxyCtx) bool {
-		if tool.host.MatchString(req.Host) && tool.url.MatchString(req.URL.Path) {
-			return false
-		}else{
-			return true
-		}
-	}
-}
-
 func (tool *Tool) getLocalhost() (string, error) {
 	conn, err := net.Dial("tcp", "www.baidu.com:80")
 	if err != nil {

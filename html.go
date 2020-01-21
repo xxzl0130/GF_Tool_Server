@@ -3,9 +3,15 @@ package main
 import (
 	"net/http"
 	"fmt"
+	"text/template"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/gobuffalo/packr"
 )
+
+func (tool *Tool)getChip(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
+	tool.html["chip"].Execute(w,tool.proxyInfo)
+}
 
 func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
 	r.ParseForm()
@@ -34,6 +40,10 @@ func (tool *Tool)postChip(w http.ResponseWriter, r *http.Request, _ httprouter.P
 
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	fmt.Fprintln(w, chip)
+}
+
+func (tool *Tool)getKalina(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
+	tool.html["kalina"].Execute(w,tool.proxyInfo)
 }
 
 func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
@@ -66,4 +76,24 @@ func (tool *Tool)postKalina(w http.ResponseWriter, r *http.Request, _ httprouter
 	}else{
 		fmt.Fprintln(w,"数据不存在！;请检查！")
 	}
+}
+
+func (tool *Tool)loadHtml(key, file_name string) {
+	data,err := tool.readFile(file_name)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	t, err := template.New("html").Parse(data)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	tool.html[key] = t
+}
+
+func (tool *Tool)readFile(file_name string) (string, error) {
+	box := packr.NewBox("./HTML")
+	data,err := box.FindString(file_name)
+	return data,err
 }
