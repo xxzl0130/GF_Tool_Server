@@ -61,7 +61,7 @@
 	}
 
 	window.onload = function () {
-		var hosts = 'https://ar.xuanxuan.tech:8080';
+		var hosts = 'http://ar.xuanxuan.tech:8080';
 
 		let getPv = async function () {
 			const pvUrl = 'https://www.fc4soda.moe/kis3/stats?view=count&url=gf.xuanxuan.tech/chip&format=json';
@@ -284,6 +284,7 @@
 		<p><mark class="tertiary">说明</mark> 将手机连接任意WiFi，长按打开WiFi的高级设置，代理选择“自动代理”，代理地址为：</p>
 		<pre>http://static.xuanxuan.tech/GF/GF.pac</pre>
 		<p>然后重启游戏，登陆完成后在本页面填写UID和昵称并选择芯片配置，然后查询。
+			<br>为避免滥用服务器，游戏只能进入基地界面并卡死，此时即可查询数据。若无此情况说明代理错误。
 			<br>芯片代码请<code>Ctrl + A</code>全选复制。<b>数据有效期为10分钟。</b>
 			<br>选择“导出”可以下载json文件，可供<a href="https://bbs.nga.cn/read.php?pid=349288968">自动录入工具</a>转换为<a
 				href="https://bbs.nga.cn/read.php?tid=15287914">Excel版</a>。

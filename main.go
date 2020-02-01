@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"time"
 	"sync"
 	"strconv"
@@ -23,8 +22,6 @@ type SignInfo struct{
 type Tool struct{
 	userinfo map[string]UserInfo	// 详细用户数据map
 	sign map[string]SignInfo		// 签名map
-	host *regexp.Regexp				// 地址正则
-	url *regexp.Regexp				// 地址正则
 	signMutex *sync.RWMutex			// 锁
 	infoMutex *sync.RWMutex			// 锁
 	port int						// 代理端口
@@ -36,8 +33,6 @@ func main(){
 	tool := &Tool{
 		userinfo : make(map[string]UserInfo),
 		sign : make(map[string]SignInfo),
-		host : regexp.MustCompile(".*\\.ppgame\\.com"),
-		url : regexp.MustCompile("(index\\.php(\\/.*\\/Index\\/index)*)|(cn_mica_new\\/.*)|(auth)|(xy\\/.*)|(Config\\/.*)|(normal_login)"),
 		signMutex : new(sync.RWMutex),
 		infoMutex : new(sync.RWMutex),
 		port : 8080,
@@ -126,8 +121,8 @@ func (tool *Tool) Run() error {
 	//data,e := ioutil.ReadFile("response.json")
 	//tool.saveUserInfo(string(data))
 
-	if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
-	//if err := httpSrv.ListenAndServe(); err != nil {
+	//if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
+	if err := httpSrv.ListenAndServe(); err != nil {
 		fmt.Printf("启动代理服务器失败 -> %+v", err)
 	}
 	return nil

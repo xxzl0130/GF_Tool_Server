@@ -108,7 +108,7 @@ func (tool *Tool) condition() goproxy.ReqConditionFunc {
 	return func(req *http.Request, ctx *goproxy.ProxyCtx) bool {
 		//fmt.Printf("请求 -> %v\n", path(req))
 		if strings.HasSuffix(req.Host, "ppgame.com") {
-			if strings.HasSuffix(req.URL.Path, "/Index/index") || strings.HasSuffix(req.URL.Path, "/Index/getDigitalSkyNbUid"){
+			if strings.HasSuffix(req.URL.Path, "/Index/index") || strings.HasSuffix(req.URL.Path, "/Index/getDigitalSkyNbUid") || strings.HasSuffix(req.URL.Path, "/Index/getUidTianxiaQueue"){
 				return true
 			}
 		}
@@ -118,11 +118,15 @@ func (tool *Tool) condition() goproxy.ReqConditionFunc {
 
 func (tool *Tool) block() goproxy.ReqConditionFunc {
 	return func(req *http.Request, ctx *goproxy.ProxyCtx) bool {
-		if tool.host.MatchString(req.Host) && tool.url.MatchString(req.URL.Path) {
-			return false
-		}else{
+		if strings.HasSuffix(req.Host, "ppgame.com") {
+			if strings.HasSuffix(req.URL.Path, "/Index/index") || strings.HasSuffix(req.URL.Path, "/Index/getDigitalSkyNbUid") || strings.HasSuffix(req.URL.Path, "/Index/getUidTianxiaQueue") ||
+			  strings.HasSuffix(req.URL.Path, ".txt") || strings.HasSuffix(req.URL.Path, "/Index/version") ||
+			  strings.HasSuffix(req.URL.Path, "auth") || strings.HasSuffix(req.Host, "res.ppgame.com") || strings.HasSuffix(req.URL.Path, "index.php") {
+				return false
+			}
 			return true
 		}
+		return true
 	}
 }
 
