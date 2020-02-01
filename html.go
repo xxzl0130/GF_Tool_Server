@@ -43,6 +43,16 @@ func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprout
 	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
 	if isPresent{
 		if r.PostForm["name"][0] == info.name{
+			rule := r.PostForm["locked"][0] + r.PostForm["equipped"][0]
+			if rule != info.rule || info.ruleChanged{
+				info.rule = rule
+				info.ruleChanged = true
+			}else{
+				info.ruleChanged = false
+			}
+			tool.infoMutex.Lock()
+			tool.userinfo[r.PostForm["uid"][0]] = info;
+			tool.infoMutex.Unlock()
 			json = tool.buildChipJson(info.uid)
 		}else{
 			json = info.name
