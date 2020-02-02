@@ -121,8 +121,8 @@ func (tool *Tool) Run() error {
 	//data,e := ioutil.ReadFile("response.json")
 	//tool.saveUserInfo(string(data))
 
-	//if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
-	if err := httpSrv.ListenAndServe(); err != nil {
+	if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
+	//if err := httpSrv.ListenAndServe(); err != nil {
 		fmt.Printf("启动代理服务器失败 -> %+v", err)
 	}
 	return nil
