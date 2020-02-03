@@ -46,6 +46,7 @@ type GF_Json struct {
 	Record UserRecord `json:"user_record"`
 	Kalina KalinaData `json:"kalina_with_user_info"`
 	SoC map[string]*soc.SoC `json:"chip_with_user_info"`
+	SquadWithUserID map[string]interface{} `json:"squad_with_user_info"`
 }
 type GF_Simple_Json struct{
 	Info User_Info `json:"user_info"`
@@ -54,6 +55,7 @@ type GF_Simple_Json struct{
 }
 type GF_Chip_Json struct{
 	SoC map[string]*soc.SoC `json:"chip_with_user_info"`
+	SquadWithUserID map[string]interface{} `json:"squad_with_user_info"`
 }
 
 func GzipCompress(data []byte) string{
@@ -164,6 +166,7 @@ func (tool *Tool) buildChipJson(uid string) string{
 
 	tmp := GF_Chip_Json{
 		SoC : girls.SoC,
+		SquadWithUserID : girls.SquadWithUserID,
 	}
 	for k, v := range tmp.SoC {
 		if !tool.checkSoc(v,info.rule){

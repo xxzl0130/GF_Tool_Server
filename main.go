@@ -118,7 +118,7 @@ func (tool *Tool) Run() error {
 	}
 	fmt.Printf("网页地址 -> %s:%d\n", localhost, tool.port)
 
-	//data,e := ioutil.ReadFile("response.json")
+	//data,_ := ioutil.ReadFile("response.json")
 	//tool.saveUserInfo(string(data))
 
 	if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
