@@ -37,7 +37,7 @@ func (tool *Tool) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.R
 		return resp
 	}
 
-	if strings.HasSuffix(ctx.Req.URL.Path,"/Index/getDigitalSkyNbUid"){
+	if strings.HasSuffix(ctx.Req.URL.Path,"/Index/getDigitalSkyNbUid") || strings.HasSuffix(ctx.Req.URL.Path, "/Index/getUidTianxiaQueue"){
 		// 解析sign
 		data, err := cipher.AuthCodeDecodeB64Default(string(body)[1:])
 		if err != nil {
@@ -107,8 +107,8 @@ func (tool *Tool) saveUserInfo(data string){
 func (tool *Tool) condition() goproxy.ReqConditionFunc {
 	return func(req *http.Request, ctx *goproxy.ProxyCtx) bool {
 		//fmt.Printf("请求 -> %v\n", path(req))
-		if strings.HasSuffix(req.Host, "ppgame.com") {
-			if strings.HasSuffix(req.URL.Path, "/Index/index") || strings.HasSuffix(req.URL.Path, "/Index/getDigitalSkyNbUid"){
+		if strings.HasSuffix(req.Host, "ppgame.com") || strings.HasSuffix(req.Host, "sn-game.txwy.tw") || strings.HasSuffix(req.Host, "sn-list.txwy.tw") {
+			if strings.HasSuffix(req.URL.Path, "/Index/index") || strings.HasSuffix(req.URL.Path, "/Index/getDigitalSkyNbUid") || strings.HasSuffix(req.URL.Path, "/Index/getUidTianxiaQueue"){
 				return true
 			}
 		}
