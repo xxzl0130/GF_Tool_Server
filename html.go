@@ -50,10 +50,10 @@ func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprout
 	r.ParseForm()
 
 	json := ""
+	rule := r.PostForm["locked"][0] + r.PostForm["equipped"][0]
 	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
 	if isPresent{
 		if r.PostForm["name"][0] == info.name{
-			rule := r.PostForm["locked"][0] + r.PostForm["equipped"][0]
 			if rule != info.rule || info.ruleChanged{
 				info.rule = rule
 				info.ruleChanged = true
@@ -68,7 +68,20 @@ func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprout
 			json = info.name
 		}
 	}else{
-		json = "数据不存在！"
+		flag := false
+		for k,v := range tool.userinfo{
+			v.rule = rule
+			v.ruleChanged = true
+			tool.infoMutex.Lock()
+			tool.userinfo[k] = v
+			tool.infoMutex.Unlock()
+			json = tool.buildChipJson(k)
+			flag = true
+			break
+		}
+		if !flag{
+			json = "数据不存在！"
+		}
 	}
 
 	w.Header().Set("Access-Control-Allow-Origin","*")
