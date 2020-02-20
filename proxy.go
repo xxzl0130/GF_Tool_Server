@@ -131,9 +131,9 @@ func (tool *Tool) block() goproxy.ReqConditionFunc {
 }
 
 func (tool *Tool) getLocalhost() (string, error) {
-	conn, err := net.Dial("tcp", "www.baidu.com:80")
+	conn, err := net.Dial("udp", "114.114.114.114:80")
 	if err != nil {
-		return "", errors.WithMessage(err, "连接 www.baidu.com:80 失败")
+		return "", errors.WithMessage(err, "连接 114.114.114.114 失败")
 	}
 	host, _, err := net.SplitHostPort(conn.LocalAddr().String())
 	if err != nil {
