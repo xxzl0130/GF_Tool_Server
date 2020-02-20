@@ -110,6 +110,7 @@ func (tool *Tool) Run() error {
 	router.POST("/chip", tool.postChip)
 	router.POST("/chipJson", tool.postChipJson)
 	router.POST("/kalina", tool.postKalina)
+	router.POST("/json", tool.postJson)
 	httpSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

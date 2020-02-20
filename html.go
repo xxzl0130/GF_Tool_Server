@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"fmt"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -56,6 +57,29 @@ func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprout
 			json = tool.buildChipJson(info.uid)
 		}else{
 			json = info.name
+		}
+	}else{
+		json = "数据不存在！"
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	fmt.Fprintln(w, json)
+}
+
+func (tool *Tool)postJson(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
+	r.ParseForm()
+
+	json := ""
+	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
+	if isPresent{
+		if r.PostForm["name"][0] == info.name{
+			tool.infoMutex.Lock()
+			info.time = time.Now().Unix()
+			tool.userinfo[info.uid] = info // 更新时间避免被清理
+			tool.infoMutex.Unlock()
+			json = GzipCompress([]byte(info.allData))
+		}else{
+			json = "数据不存在！"
 		}
 	}else{
 		json = "数据不存在！"
