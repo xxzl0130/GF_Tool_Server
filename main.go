@@ -48,41 +48,6 @@ func main(){
 	}
 }
 
-func (tool *Tool) watchdog(){
-	for{
-		time.Sleep(time.Second * 60)
-		now := time.Now().Unix()
-
-		nSignMap := make(map[string]SignInfo)
-		tool.signMutex.RLock()
-		for k,v := range tool.sign{
-			if now - v.time < tool.timeout{
-				// 拷贝未超时的值
-				nSignMap[k] = v
-			}
-		}
-		tool.signMutex.RUnlock()
-		tool.signMutex.Lock()
-		// 覆盖
-		tool.sign = nSignMap
-		tool.signMutex.Unlock()
-
-		nInfoMap := make(map[string]UserInfo)
-		tool.infoMutex.RLock()
-		for k,v := range tool.userinfo{
-			if now - v.time < tool.timeout{
-				// 拷贝未超时的值
-				nInfoMap[k] = v
-			}
-		}
-		tool.infoMutex.RUnlock()
-		tool.infoMutex.Lock()
-		// 覆盖
-		tool.userinfo = nInfoMap
-		tool.infoMutex.Unlock()
-	}
-}
-
 func (tool *Tool) Run() error {
 	localhost, err := tool.getLocalhost()
 	if err != nil {
@@ -106,8 +71,6 @@ func (tool *Tool) Run() error {
 		Handler:      proxy,
 	}
 	go srv.ListenAndServe()
-
-	go tool.watchdog()
 
 	// 网页服务
 	tool.loadHtml("chip","chip.html")
