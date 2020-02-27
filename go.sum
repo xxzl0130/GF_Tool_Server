@@ -10,8 +10,8 @@ github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/rogpeppe/go-charset v0.0.0-20180617210344-2471d30d28b4/go.mod h1:qgYeAmZ5ZIpBWTGllZSQnw97Dj+woV0toclVaRGI8pc=
-github.com/xxzl0130/rsyars v0.3.2 h1:D7DgP1uj1Y/ISCKvq0dwdv7K/vTRWVdQlXHzdVpabDI=
-github.com/xxzl0130/rsyars v0.3.2/go.mod h1:biuMLPUR+5Atl+cu+f6ncJdLeuQBcRm23fkiW1ncGkA=
+github.com/xxzl0130/rsyars v0.3.5 h1:5C72hUfbFvmBpgniJPnfxt1zZ1iaYaKvz46u4WawUTI=
+github.com/xxzl0130/rsyars v0.3.5/go.mod h1:biuMLPUR+5Atl+cu+f6ncJdLeuQBcRm23fkiW1ncGkA=
 golang.org/x/sys v0.0.0-20190907184412-d223b2b6db03/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
