@@ -50,10 +50,10 @@ func (tool *Tool)getKalina(w http.ResponseWriter, r *http.Request, _ httprouter.
 func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
 	r.ParseForm()
 
+	rule := r.PostForm["locked"][0] + r.PostForm["equipped"][0]
 	json := ""
 	info, isPresent := tool.userinfo[r.PostForm["uid"][0]]
 	if isPresent && r.PostForm["name"][0] == info.name{
-			rule := r.PostForm["locked"][0] + r.PostForm["equipped"][0]
 			if rule != info.rule || info.ruleChanged{
 				info.rule = rule
 				info.ruleChanged = true
@@ -66,7 +66,12 @@ func (tool *Tool)postChipJson(w http.ResponseWriter, r *http.Request, _ httprout
 			json = tool.buildChipJson(info.uid)
 	}else{
 		flag := false
-		for k,_ := range(tool.userinfo){
+		for k,v := range(tool.userinfo){
+			v.rule = rule
+			info.ruleChanged = true
+			tool.infoMutex.Lock()
+			tool.userinfo[k] = v
+			tool.infoMutex.Unlock()
 			json = tool.buildChipJson(k)
 			flag = true
 			break
