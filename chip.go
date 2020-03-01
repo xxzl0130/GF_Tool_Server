@@ -34,23 +34,20 @@ type User_Info struct{
 	User_id		string `json:"user_id"`
 	Name		string `json:"name"`
 }
-type UserRecord struct {
-	Spend_point string `json:"spend_point"`
-}
 type KalinaData struct {
 	Level string `json:"level"`
 	Favor string `json:"favor"`
 }
 type GF_Json struct {
 	Info User_Info `json:"user_info"`
-	Record UserRecord `json:"user_record"`
+	Record map[string]interface{} `json:"user_record"`
 	Kalina KalinaData `json:"kalina_with_user_info"`
 	SoC map[string]*soc.SoC `json:"chip_with_user_info"`
 	SquadWithUserID map[string]interface{} `json:"squad_with_user_info"`
 }
 type GF_Simple_Json struct{
 	Info User_Info `json:"user_info"`
-	Record UserRecord `json:"user_record"`
+	Record map[string]interface{} `json:"user_record"`
 	Kalina KalinaData `json:"kalina_with_user_info"`
 }
 type GF_Chip_Json struct{
@@ -206,7 +203,7 @@ func (tool *Tool) buildKalina(uid string) [2]string{
 		//fmt.Printf("解析JSON数据失败 -> %+v\n", err)
 		return str
 	}
-	str[0] = fmt.Sprintf("%v 元",value.Record.Spend_point)
+	str[0] = fmt.Sprintf("%v 元",value.Record["spend_point"])
 	str[1] = fmt.Sprintf("%v  Lv.%v/30", value.Kalina.Favor, value.Kalina.Level)
 	return str
 }
