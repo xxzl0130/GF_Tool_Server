@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css" />
 <script>
 	window.onload = function () {
-		var url = {{.host}};
+		var host = {{.host}};
 		const button = document.getElementById('submit');
 
 		let getVal = function (selector) {
@@ -36,7 +36,7 @@
 
 			try {
 				var xhr = new XMLHttpRequest();
-				xhr.open("POST", url, true);
+				xhr.open("POST", host + '/kalina', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 				xhr.send(serialize(reqData));
 

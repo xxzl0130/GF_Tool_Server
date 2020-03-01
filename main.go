@@ -55,7 +55,7 @@ func (tool *Tool) Run() error {
 	}
 	fmt.Printf("代理地址 -> %s:%d\n", localhost, tool.port + 1)
 	tool.proxyInfo["proxy"] = fmt.Sprintf("%s:%d", localhost, tool.port + 1)
-	tool.proxyInfo["host"] = fmt.Sprintf("\"http://%s:%d\"", localhost, tool.port)
+	tool.proxyInfo["host"] = fmt.Sprintf("\"http://127.0.0.1:%d\"", tool.port)
 
 	// 代理服务
 	proxy := goproxy.NewProxyHttpServer()
