@@ -90,6 +90,8 @@ func (tool *Tool) Run() error {
 	// 代理服务
 	proxy := goproxy.NewProxyHttpServer()
 	proxy.Logger = new(util.NilLogger)
+	srv.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("sn-game.txwy.tw"))).
+		HandleConnect(goproxy.AlwaysMitm)
 	proxy.OnResponse(tool.condition()).DoFunc(tool.onResponse)
 	proxy.OnRequest(tool.block()).DoFunc(
 		func(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
