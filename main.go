@@ -6,6 +6,7 @@ import (
 	"time"
 	"sync"
 	"strconv"
+	"regexp"
 	//"io/ioutil"
 
 	"github.com/xxzl0130/rsyars/pkg/util"
@@ -90,7 +91,7 @@ func (tool *Tool) Run() error {
 	// 代理服务
 	proxy := goproxy.NewProxyHttpServer()
 	proxy.Logger = new(util.NilLogger)
-	srv.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("sn-game.txwy.tw"))).
+	proxy.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("sn-game.txwy.tw"))).
 		HandleConnect(goproxy.AlwaysMitm)
 	proxy.OnResponse(tool.condition()).DoFunc(tool.onResponse)
 	proxy.OnRequest(tool.block()).DoFunc(
