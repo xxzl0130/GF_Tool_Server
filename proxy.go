@@ -36,6 +36,10 @@ func (tool *Tool) onResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.R
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 		return resp
 	}
+	if body[0] != byte(35){
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+		return resp
+	}
 
 	if strings.HasSuffix(ctx.Req.URL.Path,"/Index/getDigitalSkyNbUid") || strings.HasSuffix(ctx.Req.URL.Path, "/Index/getUidTianxiaQueue") || strings.HasSuffix(ctx.Req.URL.Path,"/Index/getUidEnMicaQueue"){
 		// 解析sign
@@ -120,8 +124,8 @@ func (tool *Tool) block() goproxy.ReqConditionFunc {
 	return func(req *http.Request, ctx *goproxy.ProxyCtx) bool {
 		if strings.HasSuffix(req.Host, "ppgame.com") || strings.HasSuffix(req.Host, "sn-game.txwy.tw")  || strings.HasSuffix(req.Host, "girlfrontline.co.kr") || strings.HasSuffix(req.Host, "sunborngame.com") || strings.HasSuffix(req.Host, "sn-game.txwy.tw") {
 			if strings.HasSuffix(req.URL.Path, "/Index/index") || strings.HasSuffix(req.URL.Path, "/Index/getDigitalSkyNbUid") || strings.HasSuffix(req.URL.Path, "/Index/getUidTianxiaQueue") || strings.HasSuffix(req.URL.Path,"/Index/getUidEnMicaQueue") ||
-			  strings.HasSuffix(req.URL.Path, ".txt") || strings.HasSuffix(req.URL.Path, "/Index/version") ||
-			  strings.HasSuffix(req.URL.Path, "auth") || strings.HasSuffix(req.Host, "res.ppgame.com") || strings.HasSuffix(req.URL.Path, "index.php") {
+			  strings.HasSuffix(req.URL.Path, ".txt") || strings.HasSuffix(req.URL.Path, "/Index/version") || strings.HasPrefix(req.URL.Path, "/passport") || strings.HasSuffix(req.URL.Path, "/Index/antiIndulgenceChange") ||
+			  strings.HasSuffix(req.URL.Path, "auth") || strings.HasSuffix(req.Host, "res.ppgame.com") || strings.HasSuffix(req.URL.Path, "index.php") || strings.HasSuffix(req.URL.Path, "/Index/heartBeat"){
 				return false
 			}
 			return true
