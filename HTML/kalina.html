@@ -12,26 +12,6 @@
 		var url = 'https://codex.xuanxuan.tech:8080/kalina';
 		const button = document.getElementById('submit');
 
-		let getPv = async function () {
-			const pvUrl = 'https://www.fc4soda.moe/kis3/stats?view=count&url=gf.xuanxuan.tech/kalina&format=json';
-			const pvChartUrl = 'https://www.fc4soda.moe/kis3/stats?view=months&url=gf.xuanxuan.tech/kalina&format=chart';
-			try {
-				const response = await fetch(pvUrl, {
-					method: 'get'
-				}).then(response => response.json())
-					.then(function (json) {
-						let pv = document.getElementById('pv');
-						pv.text = json[0].second;
-						pv.setAttribute('href', pvChartUrl);
-						document.getElementById('pvSpan').style.display = 'inline';
-					});
-			} catch (err) {
-				console.error(`Get visit number error: ${err}`);
-			}
-		}
-		/** 如不需要访问统计请注释getPv调用 **/
-		getPv()
-
 		let getVal = function (selector) {
 			return document.querySelector(selector);
 		}
@@ -172,11 +152,8 @@
 	<footer>
 		<p><a href="/chip">获取芯片数据</a>
 			| <a href="https://github.com/xxzl0130/GF_Tool_Server">GitHub</a>
-			<span id="pvSpan" style="display: none;"> | 访问量: <a id="pv" href=""></a></span>
 		</p>
 	</footer>
-	<!-- 如不需要访问统计请注释下方js -->
-	<script src="https://www.fc4soda.moe/kis3/kis3.js"></script>
 </body>
 
 </html>
