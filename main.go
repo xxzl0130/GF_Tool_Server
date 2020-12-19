@@ -7,6 +7,8 @@ import (
 	"sync"
 	"strconv"
 	"regexp"
+	"os"
+	"math/rand"
 	//"io/ioutil"
 	"text/template"
 
@@ -33,6 +35,7 @@ type Tool struct{
 }
 
 func main(){
+	rand.Seed(time.Now().Unix())
 	tool := &Tool{
 		userinfo : make(map[string]UserInfo),
 		sign : make(map[string]SignInfo),
@@ -54,7 +57,6 @@ func (tool *Tool) Run() error {
 		fmt.Printf("获取代理地址失败 -> %+v", err)
 		return err
 	}
-	fmt.Printf("代理地址 -> %s:%d\n", localhost, tool.port + 1)
 	tool.proxyInfo["proxy"] = fmt.Sprintf("%s:%d", localhost, tool.port + 1)
 	tool.proxyInfo["host"] = fmt.Sprintf("\"http://127.0.0.1:%d\"", tool.port)
 
@@ -70,7 +72,20 @@ func (tool *Tool) Run() error {
 		Addr:         ":" + strconv.Itoa(tool.port + 1),
 		Handler:      proxy,
 	}
-	go srv.ListenAndServe()
+	go func ()  {
+		if err:=srv.ListenAndServe(); err != nil{
+			// 随机端口尝试3次
+			for i := 0; i < 3;i++{
+				tool.port = rand.Intn(60000) + 5000
+				srv.Addr = ":" + strconv.Itoa(tool.port + 1)
+				if err=srv.ListenAndServe(); err != nil{
+					continue
+				}
+			}
+			fmt.Printf("启动代理服务器失败 -> %+v", err)
+			os.Exit(1)
+		}
+	}()
 
 	// 网页服务
 	tool.loadHtml("chip","chip.html")
@@ -88,6 +103,7 @@ func (tool *Tool) Run() error {
 		Addr:         ":" + strconv.Itoa(tool.port),
 		Handler:      router,
 	}
+	fmt.Printf("代理地址 -> %s:%d\n", localhost, tool.port + 1)
 	fmt.Printf("网页地址 -> %s:%d\n", localhost, tool.port)
 
 	//data,_ := ioutil.ReadFile("response.json")
