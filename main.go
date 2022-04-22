@@ -76,8 +76,13 @@ func (tool *Tool) Run() error {
 		if err:=srv.ListenAndServe(); err != nil{
 			// 随机端口尝试3次
 			for i := 0; i < 3;i++{
-				tool.port = rand.Intn(60000) + 5000
-				srv.Addr = ":" + strconv.Itoa(tool.port + 1)
+				tool.port = rand.Intn(50000) + 10000
+				srv := &http.Server{
+					ReadTimeout:  5 * time.Second,
+					WriteTimeout: 10 * time.Second,
+					Addr:         ":" + strconv.Itoa(tool.port + 1),
+					Handler:      proxy,
+				}
 				if err=srv.ListenAndServe(); err != nil{
 					continue
 				}

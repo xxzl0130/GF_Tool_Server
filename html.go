@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 )
 
 func (tool *Tool)getChip(w http.ResponseWriter, r *http.Request, _ httprouter.Params){
@@ -136,7 +136,7 @@ func (tool *Tool)loadHtml(key, file_name string) {
 }
 
 func (tool *Tool)readFile(file_name string) (string, error) {
-	box := packr.NewBox("./HTML")
+	box := packr.New("MyBox","./HTML")
 	data,err := box.FindString(file_name)
 	return data,err
 }
