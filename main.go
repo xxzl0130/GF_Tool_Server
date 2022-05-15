@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	//"io/ioutil"
 	"text/template"
+	"flag"
 
 	"github.com/xxzl0130/rsyars/pkg/util"
 	"github.com/elazarl/goproxy"
@@ -36,12 +37,16 @@ type Tool struct{
 
 func main(){
 	rand.Seed(time.Now().Unix())
+	var port int
+	flag.IntVar(&port, "port", 18888, "端口")
+	flag.Parse()
+
 	tool := &Tool{
 		userinfo : make(map[string]UserInfo),
 		sign : make(map[string]SignInfo),
 		signMutex : new(sync.RWMutex),
 		infoMutex : new(sync.RWMutex),
-		port : 8080,
+		port : port,
 		timeout : 600, // 10分钟超时
 		html : make(map[string]*template.Template),
 		proxyInfo : make(map[string]string),
@@ -57,8 +62,8 @@ func (tool *Tool) Run() error {
 		fmt.Printf("获取代理地址失败 -> %+v", err)
 		return err
 	}
-	tool.proxyInfo["proxy"] = fmt.Sprintf("%s:%d", localhost, tool.port + 1)
-	tool.proxyInfo["host"] = fmt.Sprintf("\"http://127.0.0.1:%d\"", tool.port)
+	tool.proxyInfo["proxy"] = fmt.Sprintf("%s:%d", localhost, tool.port)
+	tool.proxyInfo["host"] = fmt.Sprintf("\"http://127.0.0.1:%d\"", tool.port + 1)
 
 	// 代理服务
 	proxy := goproxy.NewProxyHttpServer()
@@ -69,7 +74,7 @@ func (tool *Tool) Run() error {
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
-		Addr:         ":" + strconv.Itoa(tool.port + 1),
+		Addr:         ":" + strconv.Itoa(tool.port),
 		Handler:      proxy,
 	}
 	go func ()  {
@@ -77,13 +82,14 @@ func (tool *Tool) Run() error {
 			// 随机端口尝试3次
 			for i := 0; i < 3;i++{
 				tool.port = rand.Intn(50000) + 10000
+				
 				srv := &http.Server{
 					ReadTimeout:  5 * time.Second,
 					WriteTimeout: 10 * time.Second,
-					Addr:         ":" + strconv.Itoa(tool.port + 1),
+					Addr:         ":" + strconv.Itoa(tool.port),
 					Handler:      proxy,
 				}
-				if err=srv.ListenAndServe(); err != nil{
+				if err:=srv.ListenAndServe(); err != nil{
 					continue
 				}
 			}
@@ -91,7 +97,7 @@ func (tool *Tool) Run() error {
 			os.Exit(1)
 		}
 	}()
-
+	
 	// 网页服务
 	tool.loadHtml("chip","chip.html")
 	tool.loadHtml("kalina","kalina.html")
@@ -105,18 +111,19 @@ func (tool *Tool) Run() error {
 	httpSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
-		Addr:         ":" + strconv.Itoa(tool.port),
+		Addr:         ":" + strconv.Itoa(tool.port + 1),
 		Handler:      router,
 	}
-	fmt.Printf("代理地址 -> %s:%d\n", localhost, tool.port + 1)
-	fmt.Printf("网页地址 -> %s:%d\n", localhost, tool.port)
+	fmt.Printf("代理地址 -> %s:%d\n", localhost, tool.port)
+	fmt.Printf("网页地址 -> %s:%d\n", localhost, tool.port + 1)
 
 	//data,_ := ioutil.ReadFile("response.json")
 	//tool.saveUserInfo(string(data))
 
 	//if err := httpSrv.ListenAndServeTLS("./_.xuanxuan.tech_chain.crt","./_.xuanxuan.tech_key.key"); err != nil {
 	if err := httpSrv.ListenAndServe(); err != nil {
-		fmt.Printf("启动代理服务器失败 -> %+v", err)
+		fmt.Printf("启动网页服务器失败 -> %+v", err)
+		os.Exit(1)
 	}
 	return nil
 }
